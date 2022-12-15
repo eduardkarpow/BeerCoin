@@ -7,5 +7,7 @@ public class BlockChainConstants {
     public static final String STORAGE_CHAIN = "STORAGE-CHAIN";
     public static final int DIFFICULTY = 20;
     public static final int RAND_BYTES = 32;
+    public static final int START_PERCENT = 10;
+    public static final int STORAGE_REWARD = 1;
 
 }

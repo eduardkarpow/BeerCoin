@@ -6,6 +6,9 @@ import BeerCoin.crypto.Repositories.BlockRepository;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Iterator;
+import java.util.List;
+
 public class BlockChain {
     private BlockChain instance;
     @Autowired
@@ -26,5 +29,15 @@ public class BlockChain {
     }
     public Block newBlock(String miner, byte[] prevHash){
         return new Block(prevHash, miner, BlockChainConstants.DIFFICULTY);
+    }
+    public int balance(String address){
+        int balance;
+        List<BlockEntity> blocks = blockRepository.findAll();
+        for(int i = blocks.size()-1; i >=0; i--){
+            if(blocks.get(i).getBlock().getMapping().containsKey(address)){
+                return blocks.get(i).getBlock().getMapping().get(address);
+            }
+        }
+        return 0;
     }
 }

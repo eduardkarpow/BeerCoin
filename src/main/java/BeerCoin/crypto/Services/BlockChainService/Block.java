@@ -1,6 +1,7 @@
 package BeerCoin.crypto.Services.BlockChainService;
 
 import BeerCoin.crypto.Constants.BlockChainConstants;
+import com.google.common.hash.Hashing;
 import org.apache.coyote.Constants;
 import org.yaml.snakeyaml.nodes.CollectionNode;
 
@@ -33,8 +34,12 @@ public class Block {
     }
     public Transaction newTransaction(User user, byte[] lastHash,String to, int value){
         Transaction ts = new Transaction(generateRandomBytes(),lastHash,user.getAdress(),to, value);
-
+        if(value > BlockChainConstants.START_PERCENT){
+            ts.setToStorage(BlockChainConstants.STORAGE_REWARD);
+        }
+        ts.setCurrHash(ts.hash());
         return ts;
+
     }
     private byte[] generateRandomBytes(){
         Random rnd = new Random();
@@ -50,5 +55,18 @@ public class Block {
     }
     public String toString(){
         return String.valueOf(this.nonce)+String.valueOf(transactions)+String.valueOf(mapping)+miner+String.valueOf(signature)+timeStamp;
+    }
+    public void addTransaction(BlockChain chain,Transaction ts){
+        int balanceInChain;
+        int balanceInTs = ts.getValue()+ts.getToStorage();
+        if(mapping.containsKey(ts.getSender())){
+            balanceInChain = mapping.get(ts.getSender());
+        } else{
+            balanceInChain = chain.balance(ts.getSender());
+
+        }
+        mapping.put(ts.getSender(), balanceInChain - balanceInTs);
+
+
     }
 }
