@@ -7,6 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BlogRepository extends JpaRepository<BlockEntity, Integer> {
-    List<BlockEntity> findByTitleContainingOrContentContaining(String text, String textAgain);
+public interface BlockRepository extends JpaRepository<BlockEntity, Integer> {
 }
