@@ -11,17 +11,17 @@ public class BlockEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private Block block;
+    //private Block block;
 
     public BlockEntity() {
     }
     public BlockEntity(Block block) {
-        this.setBlock(block);
+    //    this.setBlock(block);
     }
 
     public BlockEntity(int id, Block block) {
         this.setId(id);
-        this.setBlock(block);
+        //this.setBlock(block);
     }
 
     public int getId() {
@@ -33,18 +33,16 @@ public class BlockEntity {
     }
 
     public Block getBlock() {
-        return block;
+        return new Block();
     }
 
     public void setBlock(Block block) {
-        this.block = block;
+        //this.block = block;
     }
 
     @Override
     public String toString() {
         return "Blog{" +
-                "id=" + id +
-                ", title='"+block+
-        "}";
+                "id=" + id;
     }
 }

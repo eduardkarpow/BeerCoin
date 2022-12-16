@@ -6,6 +6,7 @@ import BeerCoin.crypto.Repositories.BlockRepository;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,4 +45,8 @@ public class BlockChain {
         List<BlockEntity> blocks = blockRepository.findAll();
         return blocks.get(blocks.size()).getBlock().getCurrHash();
     }
+    public static User newUser() throws NoSuchAlgorithmException {
+        return new User();
+    }
+
 }

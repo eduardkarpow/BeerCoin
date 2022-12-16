@@ -5,6 +5,8 @@ import BeerCoin.crypto.Exceptions.BlockIsNotValidException;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
 import org.apache.coyote.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.nodes.CollectionNode;
 
 import java.security.InvalidKeyException;
@@ -15,9 +17,10 @@ import java.security.spec.InvalidKeySpecException;
 import java.time.LocalTime;
 import java.util.*;
 
+@Service
 public class Block {
-    private int nonce;
-    private int difficulty;
+    private long nonce;
+    private int difficulty = BlockChainConstants.DIFFICULTY;
     private byte[] currHash;
     private byte[] prevHash;
     private List<Transaction> transactions;
@@ -25,6 +28,9 @@ public class Block {
     private String miner;
     private byte[] signature;
     private String timeStamp;
+    public Block(){
+
+    }
     public Block(byte[] prevHash, String miner){
         this.prevHash = prevHash;
         this.miner = miner;
@@ -174,6 +180,9 @@ public class Block {
         }
         return true;
     }
+    public long proof(){
+        return HashingService.proofOfWork(currHash);
+    }
     public void accept(BlockChain chain, User user) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
         if(!transactionIsValid(chain)){
             throw new BlockIsNotValidException();
@@ -183,7 +192,7 @@ public class Block {
         timeStamp = LocalTime.now().toString();
         currHash = hash();
         signature = HashingService.Sign(user.getPrivateKey(), currHash);
-
+        nonce = proof();
     }
 
     public byte[] getCurrHash() {

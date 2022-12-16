@@ -8,5 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("block")
 public class BlockChainController {
+    public BlockChainController(){
 
+    }
 }
