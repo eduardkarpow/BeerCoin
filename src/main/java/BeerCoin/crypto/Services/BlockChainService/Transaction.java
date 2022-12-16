@@ -6,6 +6,7 @@ import com.google.common.primitives.Bytes;
 
 import javax.swing.tree.TreeNode;
 import java.security.*;
+import java.util.Arrays;
 
 public class Transaction {
     private byte[] randBytes;
@@ -31,7 +32,7 @@ public class Transaction {
         this.currHash = currHash;
     }
     public byte[] hash(){
-        return Hashing.sha256().hashBytes(Bytes.concat(
+        return HashingService.hashData(Bytes.concat(
                 this.randBytes,
                 this.prevBlock,
                 sender.getBytes(),
@@ -43,17 +44,18 @@ public class Transaction {
                         (byte)toStorage
                 }
             )
-        ).asBytes();
+        );
     }
-    public byte[] getSign(PrivateKey privateKey, byte[] data) throws NoSuchAlgorithmException, InvalidKeyException,SignatureException {
-        Signature signature = Signature.getInstance("SHA256WithRSA");
-        SecureRandom secureRandom = new SecureRandom();
-        signature.initSign(privateKey, secureRandom);
-        signature.update(data);
-        return signature.sign();
+    public byte[] getSign(PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException,SignatureException {
+        return HashingService.Sign(privateKey, currHash);
 
     }
-
+    public boolean hashIsValid(){
+        return Arrays.equals(currHash,this.hash());
+    }
+    public boolean signIsValid(PublicKey publicKey) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        return HashingService.SignIsValid(publicKey, currHash, signature);
+    }
     public int getValue() {
         return value;
     }
@@ -64,5 +66,21 @@ public class Transaction {
 
     public String getSender() {
         return sender;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public byte[] getRandBytes() {
+        return randBytes;
+    }
+
+    public void setSignature(byte[] signature) {
+        this.signature = signature;
+    }
+
+    public byte[] getCurrHash() {
+        return currHash;
     }
 }

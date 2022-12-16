@@ -27,6 +27,11 @@
 			<version>23.5-jre</version>
 		</dependency>
 		<dependency>
+			<groupId>info.debatty</groupId>
+			<artifactId>java-lsh</artifactId>
+			<version>RELEASE</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>

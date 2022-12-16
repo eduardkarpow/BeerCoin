@@ -40,4 +40,8 @@ public class BlockChain {
         }
         return 0;
     }
+    public byte[] lastHash(){
+        List<BlockEntity> blocks = blockRepository.findAll();
+        return blocks.get(blocks.size()).getBlock().getCurrHash();
+    }
 }

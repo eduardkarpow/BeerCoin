@@ -14,10 +14,11 @@ public class User {
         this.publicKey = kp.getPublic();
     }
     public String Private(){
-        return privateKey.toString();
+        return privateKey.getEncoded().toString();
     }
+    public PrivateKey getPrivateKey(){return this.privateKey;}
     public String Public(){
-        return publicKey.toString();
+        return publicKey.getEncoded().toString();
     }
     public String getAdress(){
         return Public();
