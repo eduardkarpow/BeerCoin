@@ -4,6 +4,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class User {
@@ -13,19 +14,20 @@ public class User {
     public User() throws NoSuchAlgorithmException {
         generateKeys();
     }
-    public User(String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        authenticateUser(publicKey);
+    public User(String publicKey, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        authenticateUser(publicKey, privateKey);
     }
-    private void authenticateUser(String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        System.out.println(0);
+    private void authenticateUser(String publicKey, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] publicBytes = Base64.decodeBase64(publicKey);
-        System.out.println(1);
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
-        System.out.println(2);
+        byte[] privateBytes = Base64.decodeBase64(privateKey);
+        X509EncodedKeySpec keySpecPublic = new X509EncodedKeySpec(publicBytes);
+        PKCS8EncodedKeySpec keySpecPrivate = new PKCS8EncodedKeySpec(privateBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        System.out.println(3);
-        this.publicKey = keyFactory.generatePublic(keySpec);
-        this.privateKey = keyFactory.generatePrivate(keySpec);
+        this.publicKey = keyFactory.generatePublic(keySpecPublic);
+        this.privateKey = keyFactory.generatePrivate(keySpecPrivate);
+    }
+    private String encode(byte[] data){
+        return java.util.Base64.getEncoder().encodeToString(data);
     }
     private void generateKeys()throws NoSuchAlgorithmException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -35,12 +37,11 @@ public class User {
         this.publicKey = kp.getPublic();
     }
     public String Private(){
-        return privateKey.getEncoded().toString();
+        return encode(privateKey.getEncoded());
     }
     public PrivateKey getPrivateKey(){return this.privateKey;}
     public String Public(){
-        System.out.println(privateKey.toString());
-        return publicKey.toString();
+        return encode(publicKey.getEncoded());
     }
     public String getAdress(){
         return Public();

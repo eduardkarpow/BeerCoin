@@ -25,16 +25,14 @@ public class UserController {
     @PostMapping("users/register")
     UserEntity register(@RequestBody UserEntity user) throws NoSuchAlgorithmException {
         currentUser = new User();
-        return userRepository.save(new UserEntity(user.getLogin(), currentUser.Public()));
+        return userRepository.save(new UserEntity(user.getLogin(), currentUser.Public(), currentUser.Private()));
     }
     @PostMapping("users/login")
-    User login(@RequestBody UserEntity user) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    UserEntity login(@RequestBody UserEntity user) throws NoSuchAlgorithmException, InvalidKeySpecException {
         if(userRepository.findByLogin(user.getLogin()).get(0).getPublicKey().equals(user.getPublicKey())){
-            System.out.println(123);
-            currentUser = new User(user.getPublicKey());
-            System.out.println(currentUser);
+            currentUser = new User(user.getPublicKey(), user.getPrivateKey());
         }
-        return currentUser;
+        return user;
     }
     @GetMapping("users/getAll")
     List<UserEntity> getAll(){
@@ -45,8 +43,4 @@ public class UserController {
     public void handle(Exception e){
         System.out.println(e);
     }
-    //@PostMapping("/get")
-    //UserEntity get(@RequestBody UserEntity userEntity){
-    //    return userRepository.findBy(userEntity, )
-    //}
 }

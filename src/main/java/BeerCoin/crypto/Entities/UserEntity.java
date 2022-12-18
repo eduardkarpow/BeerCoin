@@ -22,15 +22,18 @@ public class UserEntity {
     private String login;
     @Column(columnDefinition = "TEXT")
     private String publicKey;
+    @Column(columnDefinition = "TEXT")
+    private String privateKey;
 
     public UserEntity() {
     }
     public UserEntity(String login) throws NoSuchAlgorithmException {
         this.login = login;
     }
-    public UserEntity(String login, String publicKey) {
+    public UserEntity(String login, String publicKey, String privateKey) {
         this.login = login;
         this.publicKey = publicKey;
+        this.privateKey = privateKey;
     }
 
 
@@ -49,6 +52,15 @@ public class UserEntity {
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
     }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+
     @Override
     public String toString(){
         return login + " " + publicKey;
