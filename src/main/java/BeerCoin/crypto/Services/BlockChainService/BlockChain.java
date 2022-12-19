@@ -3,6 +3,7 @@ package BeerCoin.crypto.Services.BlockChainService;
 import BeerCoin.crypto.Constants.BlockChainConstants;
 import BeerCoin.crypto.Entities.BlockEntity;
 import BeerCoin.crypto.Repositories.BlockRepository;
+import BeerCoin.crypto.Repositories.UserRepository;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,13 +18,16 @@ public class BlockChain {
     private BlockChain(){
         this.instance = new BlockChain();
     }
-    public static void newChain(String fileName,String receiver){
+    public static void newChain(BlockRepository blockRepository, String fileName, String receiver){
 
-
+        if(blockRepository.findAll() != null){
+            return;
+        }
         Block genesis = new Block(BlockChainConstants.GENESIS_BLOCK.getBytes(),receiver);
         genesis.getMapping().put(BlockChainConstants.STORAGE_CHAIN, BlockChainConstants.STORAGE_VALUE);
         genesis.getMapping().put(receiver, BlockChainConstants.GENESIS_REWARD);
         genesis.setCurrHash(Hashing.sha256().hashInt(genesis.hashCode()).asBytes());
+        blockRepository.save(new BlockEntity(genesis));
     }
     public void addBlock(Block block){
         blockRepository.save(new BlockEntity(block));
@@ -48,5 +52,6 @@ public class BlockChain {
     public static User newUser() throws NoSuchAlgorithmException {
         return new User();
     }
+
 
 }

@@ -198,4 +198,32 @@ public class Block {
     public byte[] getCurrHash() {
         return currHash;
     }
+
+    public long getNonce() {
+        return nonce;
+    }
+
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public byte[] getPrevHash() {
+        return prevHash;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public String getMiner() {
+        return miner;
+    }
+
+    public byte[] getSignature() {
+        return signature;
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
 }

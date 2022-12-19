@@ -12,11 +12,24 @@ public class BlockEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     //private Block block;
-
+    private long nonce;
+    private int diffivulty;
+    private String currHash;
+    private String prevHash;
+    private TransactionEntity[] transactions;
+    private MappingEntity[] mapping;
+    private UserEntity miner;
+    private String signature;
+    private String timeStamp;
     public BlockEntity() {
     }
     public BlockEntity(Block block) {
-    //    this.setBlock(block);
+        this.nonce = block.getNonce();
+        this.diffivulty = block.getDifficulty();
+        this.currHash = block.getCurrHash().toString();
+        this.prevHash = block.getPrevHash().toString();
+        this.signature = block.getSignature().toString();
+        this.timeStamp = block.getTimeStamp();
     }
 
     public BlockEntity(int id, Block block) {
