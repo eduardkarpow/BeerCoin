@@ -7,12 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "block",schema = "", catalog = "block")
+@Table(name="block_entity")
 public class BlockEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    //private Block block;
     private long nonce;
     private int diffivulty;
     @Column(columnDefinition = "TEXT")
@@ -28,9 +27,9 @@ public class BlockEntity {
 
 
 
-
+    @OneToMany(mappedBy = "blockEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MappingEntity> mapping = new HashSet<MappingEntity>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "block")
+
     public Set<MappingEntity> getMapping() {
         return mapping;
     }
@@ -42,9 +41,10 @@ public class BlockEntity {
         mapping.setBlock(this);
         this.mapping.add(mapping);
     }
+    @OneToMany(mappedBy = "blockEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TransactionEntity> transactions = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "block")
+
     public Set<TransactionEntity> getTransactions() {
         return transactions;
     }
@@ -69,15 +69,15 @@ public class BlockEntity {
     }
 
     public BlockEntity(int id, Block block) {
-        this.setId(id);
+        this.setBlockId(id);
         //this.setBlock(block);
     }
 
-    public int getId() {
+    public int getBlockId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setBlockId(int id) {
         this.id = id;
     }
 

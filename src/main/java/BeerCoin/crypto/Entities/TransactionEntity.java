@@ -4,7 +4,7 @@ package BeerCoin.crypto.Entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="transaction",schema="", catalog = "block")
+@Table(name = "transaction_entity")
 public class TransactionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,14 +24,16 @@ public class TransactionEntity {
     @Column(columnDefinition = "TEXT")
     private String signature;
 
-    private BlockEntity block;
+
     @ManyToOne
-    @JoinColumn(name="block_id", referencedColumnName = "id")
+    @JoinColumn(name = "block_entity_id")
+    private BlockEntity blockEntity;
+
     public BlockEntity getBlock(){
-        return this.block;
+        return this.blockEntity;
     }
     public void setBlock(BlockEntity block){
-        this.block = block;
+        this.blockEntity = block;
     }
 
     public TransactionEntity(int id, String randBytes, String prevBlock, String sender, String receiver, int value, int toStorage, String currHash, String signature) {

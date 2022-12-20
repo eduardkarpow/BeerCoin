@@ -3,6 +3,7 @@ package BeerCoin.crypto.Entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "mapping_entity")
 public class MappingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,16 +21,16 @@ public class MappingEntity {
         this.id = id;
     }
 
-
-    private BlockEntity block;
     @ManyToOne
-    @JoinColumn(name="block_id",referencedColumnName = "id")
+    @JoinColumn(name = "block_entity_id")
+    private BlockEntity blockEntity;
+
     public BlockEntity getBlock() {
-        return block;
+        return blockEntity;
     }
 
-    public void setBlock(BlockEntity block) {
-        this.block = block;
+    public void setBlock(BlockEntity blockEntity) {
+        this.blockEntity = blockEntity;
     }
 
 
