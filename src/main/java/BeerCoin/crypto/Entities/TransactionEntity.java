@@ -1,26 +1,40 @@
 package BeerCoin.crypto.Entities;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name="transaction",schema="", catalog = "block")
 public class TransactionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+    @Column(columnDefinition = "TEXT")
     private String randBytes;
+    @Column(columnDefinition = "TEXT")
     private String prevBlock;
-    private UserEntity sender;
-    private UserEntity receiver;
+    @Column(columnDefinition = "TEXT")
+    private String sender;
+    @Column(columnDefinition = "TEXT")
+    private String receiver;
     private int value;
     private int toStorage;
+    @Column(columnDefinition = "TEXT")
     private String currHash;
+    @Column(columnDefinition = "TEXT")
     private String signature;
 
-    public TransactionEntity(int id, String randBytes, String prevBlock, UserEntity sender, UserEntity receiver, int value, int toStorage, String currHash, String signature) {
+    private BlockEntity block;
+    @ManyToOne
+    @JoinColumn(name="block_id", referencedColumnName = "id")
+    public BlockEntity getBlock(){
+        return this.block;
+    }
+    public void setBlock(BlockEntity block){
+        this.block = block;
+    }
+
+    public TransactionEntity(int id, String randBytes, String prevBlock, String sender, String receiver, int value, int toStorage, String currHash, String signature) {
         this.id = id;
         this.randBytes = randBytes;
         this.prevBlock = prevBlock;
@@ -32,7 +46,7 @@ public class TransactionEntity {
         this.signature = signature;
     }
 
-    public TransactionEntity(String randBytes, String prevBlock, UserEntity sender, UserEntity receiver, int value, int toStorage, String currHash, String signature) {
+    public TransactionEntity(String randBytes, String prevBlock, String sender, String receiver, int value, int toStorage, String currHash, String signature) {
         this.randBytes = randBytes;
         this.prevBlock = prevBlock;
         this.sender = sender;
@@ -71,19 +85,19 @@ public class TransactionEntity {
         this.prevBlock = prevBlock;
     }
 
-    public UserEntity getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(UserEntity sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 
-    public UserEntity getReceiver() {
+    public String getReceiver() {
         return receiver;
     }
 
-    public void setReceiver(UserEntity receiver) {
+    public void setReceiver(String receiver) {
         this.receiver = receiver;
     }
 

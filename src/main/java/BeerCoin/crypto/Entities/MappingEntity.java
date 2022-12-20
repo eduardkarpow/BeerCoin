@@ -1,16 +1,43 @@
 package BeerCoin.crypto.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class MappingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    @Column(columnDefinition = "TEXT")
     private String key;
     private int value;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    private BlockEntity block;
+    @ManyToOne
+    @JoinColumn(name="block_id",referencedColumnName = "id")
+    public BlockEntity getBlock() {
+        return block;
+    }
+
+    public void setBlock(BlockEntity block) {
+        this.block = block;
+    }
+
+
+    public MappingEntity(int id,String key, int value) {
+        this.id = id;
+        this.key = key;
+        this.value = value;
+    }
 
     public MappingEntity(String key, int value) {
         this.key = key;

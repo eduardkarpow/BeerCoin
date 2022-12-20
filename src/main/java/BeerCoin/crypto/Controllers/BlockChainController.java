@@ -2,6 +2,7 @@ package BeerCoin.crypto.Controllers;
 
 import BeerCoin.crypto.Entities.BlockEntity;
 import BeerCoin.crypto.Repositories.BlockRepository;
+import BeerCoin.crypto.Services.BlockChainService.Block;
 import BeerCoin.crypto.Services.BlockChainService.BlockChain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,5 +21,12 @@ public class BlockChainController {
     @GetMapping("block/init")
     BlockEntity init(){
         return new BlockEntity();
+    }
+    @GetMapping("block/test/add")
+    BlockEntity add(){
+        byte[] bt = {(byte) 12, (byte)123};
+        BlockEntity blockEntity = new BlockEntity(new Block(bt, "adafiajfasfaf"));
+        blockRepository.save(blockEntity);
+        return blockEntity;
     }
 }
