@@ -26,9 +26,6 @@ public class User {
         this.publicKey = keyFactory.generatePublic(keySpecPublic);
         this.privateKey = keyFactory.generatePrivate(keySpecPrivate);
     }
-    private String encode(byte[] data){
-        return java.util.Base64.getEncoder().encodeToString(data);
-    }
     private void generateKeys()throws NoSuchAlgorithmException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(2048);
@@ -37,11 +34,11 @@ public class User {
         this.publicKey = kp.getPublic();
     }
     public String Private(){
-        return encode(privateKey.getEncoded());
+        return HashingService.encode(privateKey.getEncoded());
     }
     public PrivateKey getPrivateKey(){return this.privateKey;}
     public String Public(){
-        return encode(publicKey.getEncoded());
+        return HashingService.encode(publicKey.getEncoded());
     }
     public String getAdress(){
         return Public();

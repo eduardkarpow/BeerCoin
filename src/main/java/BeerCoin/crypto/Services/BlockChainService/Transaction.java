@@ -83,4 +83,12 @@ public class Transaction {
     public byte[] getCurrHash() {
         return currHash;
     }
+
+    public byte[] getPrevBlock() {
+        return prevBlock;
+    }
+
+    public byte[] getSignature() {
+        return signature;
+    }
 }

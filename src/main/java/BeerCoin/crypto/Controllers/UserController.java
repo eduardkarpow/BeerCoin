@@ -18,7 +18,7 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserRepository userRepository;
-    private User currentUser;
+    private static User currentUser;
     public UserController(){
 
     }
@@ -42,5 +42,8 @@ public class UserController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handle(Exception e){
         System.out.println(e);
+    }
+    public static User getCurrentUser(){
+        return currentUser;
     }
 }

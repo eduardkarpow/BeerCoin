@@ -1,6 +1,7 @@
 package BeerCoin.crypto.Entities;
 
 
+import BeerCoin.crypto.Services.BlockChainService.Transaction;
 import jakarta.persistence.*;
 
 @Entity
@@ -48,15 +49,15 @@ public class TransactionEntity {
         this.signature = signature;
     }
 
-    public TransactionEntity(String randBytes, String prevBlock, String sender, String receiver, int value, int toStorage, String currHash, String signature) {
-        this.randBytes = randBytes;
-        this.prevBlock = prevBlock;
-        this.sender = sender;
-        this.receiver = receiver;
-        this.value = value;
-        this.toStorage = toStorage;
-        this.currHash = currHash;
-        this.signature = signature;
+    public TransactionEntity(Transaction transaction) {
+        this.randBytes = transaction.getRandBytes() == null ? null : transaction.getRandBytes().toString();
+        this.prevBlock = transaction.getPrevBlock() == null ? null : transaction.getPrevBlock().toString();
+        this.sender = transaction.getSender();
+        this.receiver = transaction.getReceiver();
+        this.value = transaction.getValue();
+        this.toStorage = transaction.getToStorage();
+        this.currHash = transaction.getCurrHash() == null ? null : transaction.getCurrHash().toString();
+        this.signature = transaction.getSignature() == null ? null : transaction.getSignature().toString();
     }
 
     public TransactionEntity() {

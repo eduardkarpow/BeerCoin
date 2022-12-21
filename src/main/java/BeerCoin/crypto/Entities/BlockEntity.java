@@ -24,9 +24,6 @@ public class BlockEntity {
     @Column(columnDefinition = "TEXT")
     private String signature;
     private String timeStamp;
-
-
-
     @OneToMany(mappedBy = "blockEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MappingEntity> mapping = new HashSet<MappingEntity>();
 
@@ -44,7 +41,20 @@ public class BlockEntity {
     @OneToMany(mappedBy = "blockEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TransactionEntity> transactions = new HashSet<>();
 
+    public BlockEntity() {
+    }
+    public BlockEntity(Block block) {
+        this.nonce = block.getNonce();
+        this.diffivulty = block.getDifficulty();
+        this.currHash = block.getCurrHash() == null ? null :  java.util.Base64.getEncoder().encodeToString(block.getCurrHash());
+        this.prevHash = block.getPrevHash() == null ? null : java.util.Base64.getEncoder().encodeToString(block.getPrevHash());
+        this.signature = block.getSignature() == null ? null : java.util.Base64.getEncoder().encodeToString(block.getSignature());
+        this.timeStamp = block.getTimeStamp();
+    }
 
+    public BlockEntity(int id) {
+        this.setId(id);
+    }
     public Set<TransactionEntity> getTransactions() {
         return transactions;
     }
@@ -57,36 +67,40 @@ public class BlockEntity {
         this.transactions.add(transaction);
     }
 
-    public BlockEntity() {
-    }
-    public BlockEntity(Block block) {
-        this.nonce = block.getNonce();
-        this.diffivulty = block.getDifficulty();
-        this.currHash = block.getCurrHash().toString();
-        this.prevHash = block.getPrevHash().toString();
-        this.signature = block.getSignature().toString();
-        this.timeStamp = block.getTimeStamp();
-    }
-
-    public BlockEntity(int id, Block block) {
-        this.setBlockId(id);
-        //this.setBlock(block);
-    }
-
-    public int getBlockId() {
+    public int getId() {
         return id;
     }
 
-    public void setBlockId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
-
-    public Block getBlock() {
-        return new Block();
+    public Block getBlock(){
+        return new Block(this);
     }
 
-    public void setBlock(Block block) {
-        //this.block = block;
+    public long getNonce() {
+        return nonce;
+    }
+
+
+    public String getCurrHash() {
+        return currHash;
+    }
+
+    public String getPrevHash() {
+        return prevHash;
+    }
+
+    public String getMiner() {
+        return miner;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
     }
 
     @Override

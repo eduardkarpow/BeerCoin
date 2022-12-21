@@ -1,6 +1,9 @@
 package BeerCoin.crypto.Services.BlockChainService;
 
 import BeerCoin.crypto.Constants.BlockChainConstants;
+import BeerCoin.crypto.Entities.BlockEntity;
+import BeerCoin.crypto.Entities.MappingEntity;
+import BeerCoin.crypto.Entities.TransactionEntity;
 import BeerCoin.crypto.Exceptions.BlockIsNotValidException;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
@@ -23,62 +26,68 @@ public class Block {
     private int difficulty = BlockChainConstants.DIFFICULTY;
     private byte[] currHash;
     private byte[] prevHash;
-    private List<Transaction> transactions;
-    private Map<String, Integer> mapping;
+    private Set<TransactionEntity> transactions;
+    private Set<MappingEntity> mapping;
     private String miner;
     private byte[] signature;
     private String timeStamp;
     public Block(){
 
     }
+    public Block(BlockEntity blockEntity){
+        this.nonce = blockEntity.getNonce();
+        this.currHash = HashingService.decode(blockEntity.getCurrHash());
+        this.prevHash = HashingService.decode(blockEntity.getPrevHash());
+        this.transactions = blockEntity.getTransactions();
+        this.mapping = blockEntity.getMapping();
+        this.miner = blockEntity.getMiner();
+        this.signature = HashingService.decode(blockEntity.getSignature());
+        this.timeStamp = blockEntity.getTimeStamp();
+    }
     public Block(byte[] prevHash, String miner){
         this.prevHash = prevHash;
         this.miner = miner;
-        this.mapping = new HashMap<String, Integer>();
+        this.mapping = new HashSet<>();
         this.timeStamp = LocalTime.now().toString();
-        this.transactions = new ArrayList<Transaction>();
+        this.transactions = new HashSet<>();
     }
     public Block(byte[] prevHash, String miner, int difficulty){
         this.prevHash = prevHash;
         this.miner = miner;
-        this.mapping = new HashMap<String, Integer>();
+        this.mapping = new HashSet<>();
         this.difficulty = difficulty;
     }
     public Transaction newTransaction(User user, byte[] lastHash,String to, int value) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-        Transaction ts = new Transaction(generateRandomBytes(),lastHash,user.getAdress(),to, value);
+        Transaction ts = new Transaction(HashingService.generateRandomBytes(),lastHash,user.getAdress(),to, value);
         if(value > BlockChainConstants.START_PERCENT){
             ts.setToStorage(BlockChainConstants.STORAGE_REWARD);
         }
         ts.setCurrHash(ts.hash());
         ts.setSignature(ts.getSign(user.getPrivateKey()));
         return ts;
+    }
+    public int containsKey(Set<MappingEntity> set, String key){
+        for(MappingEntity mEntity : set){
+            if(mEntity.getKey().equals(key)){
+                return mEntity.getValue();
+            }
+        }
+        return -1;
+    }
 
-    }
-    private byte[] generateRandomBytes(){
-        Random rnd = new Random();
-        byte[] arr = new byte[BlockChainConstants.RAND_BYTES];
-        rnd.nextBytes(arr);
-        return arr;
-    }
-    public Map<String, Integer> getMapping(){
-        return this.mapping;
-    }
-    public void setCurrHash(byte[] currHash){
-        this.currHash = currHash;
-    }
-    public String toString(){
-        return String.valueOf(this.nonce)+String.valueOf(transactions)+String.valueOf(mapping)+miner+String.valueOf(signature)+timeStamp;
-    }
-    public void addTransaction(BlockChain chain,Transaction ts){
+    public void addTransaction(BlockChain chain,Transaction ts, BlockEntity blockEntity){
         int balanceInChain;
         int balanceInTs = ts.getValue()+ts.getToStorage();
-        if(mapping.containsKey(ts.getSender())){
-            balanceInChain = mapping.get(ts.getSender());
+        int value = containsKey(blockEntity.getMapping(),ts.getSender());
+        if(value != -1){
+            balanceInChain = value;
         } else{
             balanceInChain = chain.balance(ts.getSender());
 
         }
-        mapping.put(ts.getSender(), balanceInChain - balanceInTs);
+        MappingEntity mappingEntity = new MappingEntity(ts.getSender(), balanceInChain - balanceInTs);
+        blockEntity.addMapping(mappingEntity);
+        mapping.add(mappingEntity);
         addBalance(chain,ts.getReceiver(), ts.getValue());
         addBalance(chain, BlockChainConstants.STORAGE_CHAIN, ts.getToStorage());
         transactions.add(ts);
@@ -187,7 +196,7 @@ public class Block {
         if(!transactionIsValid(chain)){
             throw new BlockIsNotValidException();
         }
-        Transaction toMinerTransaction = new Transaction(generateRandomBytes(), chain.lastHash() ,BlockChainConstants.STORAGE_CHAIN, user.getAdress(), BlockChainConstants.STORAGE_REWARD);
+        Transaction toMinerTransaction = new Transaction(HashingService.generateRandomBytes(), chain.lastHash() ,BlockChainConstants.STORAGE_CHAIN, user.getAdress(), BlockChainConstants.STORAGE_REWARD);
         addTransaction(chain, toMinerTransaction);
         timeStamp = LocalTime.now().toString();
         currHash = hash();
@@ -195,6 +204,15 @@ public class Block {
         nonce = proof();
     }
 
+    public Map<String, Integer> getMapping(){
+        return this.mapping;
+    }
+    public void setCurrHash(byte[] currHash){
+        this.currHash = currHash;
+    }
+    public String toString(){
+        return String.valueOf(this.nonce)+String.valueOf(transactions)+String.valueOf(mapping)+miner+String.valueOf(signature)+timeStamp;
+    }
     public byte[] getCurrHash() {
         return currHash;
     }

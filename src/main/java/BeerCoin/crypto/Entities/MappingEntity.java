@@ -10,6 +10,7 @@ public class MappingEntity {
     private int id;
     @Column(columnDefinition = "TEXT")
     private String key;
+    @Column(name="value")
     private int value;
 
 

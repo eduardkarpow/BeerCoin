@@ -2,6 +2,7 @@ package BeerCoin.crypto.Services.BlockChainService;
 
 import BeerCoin.crypto.Constants.BlockChainConstants;
 import BeerCoin.crypto.Entities.BlockEntity;
+import BeerCoin.crypto.Entities.MappingEntity;
 import BeerCoin.crypto.Repositories.BlockRepository;
 import BeerCoin.crypto.Repositories.UserRepository;
 import com.google.common.hash.Hashing;
@@ -18,18 +19,21 @@ public class BlockChain {
     private BlockChain(){
         this.instance = new BlockChain();
     }
-    public static void newChain(BlockRepository blockRepository, String fileName, String receiver){
+    public static void newChain(BlockRepository blockRepository, String receiver){
 
         if(blockRepository.findAll() != null){
             return;
         }
         Block genesis = new Block(BlockChainConstants.GENESIS_BLOCK.getBytes(),receiver);
-        genesis.getMapping().put(BlockChainConstants.STORAGE_CHAIN, BlockChainConstants.STORAGE_VALUE);
-        genesis.getMapping().put(receiver, BlockChainConstants.GENESIS_REWARD);
+        MappingEntity senderMap = new MappingEntity(BlockChainConstants.STORAGE_CHAIN,BlockChainConstants.STORAGE_VALUE);
+        MappingEntity receiverMap = new MappingEntity(receiver, BlockChainConstants.GENESIS_REWARD);
         genesis.setCurrHash(Hashing.sha256().hashInt(genesis.hashCode()).asBytes());
-        blockRepository.save(new BlockEntity(genesis));
+        BlockEntity blockEntity = new BlockEntity(genesis);
+        blockEntity.addMapping(senderMap);
+        blockEntity.addMapping(receiverMap);
+        blockRepository.save(blockEntity);
     }
-    public void addBlock(Block block){
+    public void addBlock(BlockRepository blockRepository,Block block){
         blockRepository.save(new BlockEntity(block));
     }
     public Block newBlock(String miner, byte[] prevHash){
@@ -39,8 +43,10 @@ public class BlockChain {
         int balance;
         List<BlockEntity> blocks = blockRepository.findAll();
         for(int i = blocks.size()-1; i >=0; i--){
-            if(blocks.get(i).getBlock().getMapping().containsKey(address)){
-                return blocks.get(i).getBlock().getMapping().get(address);
+            for(MappingEntity mappingEntity : blocks.get(i).getMapping()) {
+                if (mappingEntity.getKey().equals(address)) {
+                    return mappingEntity.getValue();
+                }
             }
         }
         return 0;
@@ -49,9 +55,4 @@ public class BlockChain {
         List<BlockEntity> blocks = blockRepository.findAll();
         return blocks.get(blocks.size()).getBlock().getCurrHash();
     }
-    public static User newUser() throws NoSuchAlgorithmException {
-        return new User();
-    }
-
-
 }
