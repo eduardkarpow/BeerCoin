@@ -5,6 +5,7 @@ import BeerCoin.crypto.Entities.BlockEntity;
 import BeerCoin.crypto.Entities.MappingEntity;
 import BeerCoin.crypto.Entities.TransactionEntity;
 import BeerCoin.crypto.Exceptions.BlockIsNotValidException;
+import BeerCoin.crypto.Repositories.MappingRepository;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
 import org.apache.coyote.Constants;
@@ -75,7 +76,7 @@ public class Block {
         return -1;
     }
 
-    public void addTransaction(BlockChain chain,Transaction ts, BlockEntity blockEntity){
+    public void addTransaction(BlockChain chain, MappingRepository mappingRepository,Transaction ts, BlockEntity blockEntity){
         int balanceInChain;
         int balanceInTs = ts.getValue()+ts.getToStorage();
         int value = containsKey(blockEntity.getMapping(),ts.getSender());
@@ -88,19 +89,28 @@ public class Block {
         MappingEntity mappingEntity = new MappingEntity(ts.getSender(), balanceInChain - balanceInTs);
         blockEntity.addMapping(mappingEntity);
         mapping.add(mappingEntity);
-        addBalance(chain,ts.getReceiver(), ts.getValue());
-        addBalance(chain, BlockChainConstants.STORAGE_CHAIN, ts.getToStorage());
+        addBalance(mappingRepository,chain,ts.getReceiver(), ts.getValue());
+        addBalance(mappingRepository,chain, BlockChainConstants.STORAGE_CHAIN, ts.getToStorage());
         transactions.add(ts);
 
     }
-    public void addBalance(BlockChain chain, String receiver, int value){
+    public void addBalance(BlockEntity blockEntity,MappingRepository mappingRepository,BlockChain chain, String receiver, int value){
         int balanceInChain;
-        if(mapping.containsKey(receiver)){
-            balanceInChain = mapping.get(receiver);
+        MappingEntity mappingEntity;
+        int value1 = containsKey(mapping,receiver);
+        if(value1 != -1){
+            balanceInChain = value1;
+            mappingEntity = new MappingEntity(receiver, balanceInChain+value1);
+            blockEntity.addMapping(mappingEntity);
+            mappingRepository.save(mappingEntity);
         } else{
             balanceInChain = chain.balance(receiver);
+            mappingEntity = new MappingEntity(receiver, balanceInChain+value);
+            blockEntity.addMapping(mappingEntity);
+            mappingRepository.save(mappingEntity);
+            mapping.add(mappingEntity);
         }
-        mapping.put(receiver, balanceInChain+value);
+
     }
     public boolean balanceIsValid(BlockChain chain,String address){
         if(!mapping.containsKey(address)){
